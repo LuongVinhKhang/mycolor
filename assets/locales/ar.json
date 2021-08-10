@@ -1,0 +1,8 @@
+{
+    "select_your_full_screen_mode": "Select your full screen mode AR",
+    "test_text": "مرحبًا يا رفاق ، أنا تطبيق ذكي للغاية",
+    "color_setting_dialog_empty_color_alert": "Warning",
+    "color_setting_dialog_empty_color_you_removed_all_color": "You removed all color, return back to setting will reset the colorback to default",
+    "color_setting_dialog_empty_color_cancel": "Cancel",
+    "color_setting_dialog_empty_color_ok": "Contiue"
+}
