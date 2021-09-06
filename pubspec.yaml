@@ -2,10 +2,10 @@ name: mycolor
 version: 1.0.0+1
 publish_to: none
 description: A new Flutter project.
-environment: 
-  sdk: '>=2.12.0 <3.0.0'
+environment:
+  sdk: ">=2.12.0 <3.0.0"
 
-dependencies: 
+dependencies:
   cupertino_icons: ^1.0.2
   get: 4.2.4
   shared_preferences: 2.0.6
@@ -26,26 +26,40 @@ dependencies:
   animated_theme_switcher: 2.0.1
   google_fonts: 2.1.0
   animated_text_kit: 4.2.1
-  flutter: 
+  adaptive_dialog: 1.1.0
+  flutter_i18n: 0.30.0
+  audioplayers: 0.19.1
+  just_audio: 0.9.7
+  device_preview: 0.7.4
+  flutter:
     sdk: flutter
-  flutter_localizations: 
+  flutter_localizations:
     sdk: flutter
 
-dev_dependencies: 
-  flutter_test: 
+dev_dependencies:
+  integration_test:
     sdk: flutter
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: any
 
-flutter: 
-  assets: 
+flutter:
+  assets:
     - assets/rives/tree.riv
     - assets/rives/cat.riv
     - assets/rives/playpause.riv
     - assets/svgs/empty.svg
     - assets/images/1_No Connection.png
     - assets/images/4_File Not Found.png
-  fonts: 
+    - assets/sounds/numberpicker_sound.mp3
+    - assets/sounds/notify_sound.mp3
+    - assets/sounds/field.mp3
+    - assets/sounds/summer.mp3
+    - assets/sounds/wave.mp3
+  fonts:
     - family: KoHo
-      fonts: 
+      fonts:
         - asset: assets/fonts/koho/KoHo-Regular.ttf
   uses-material-design: true
-

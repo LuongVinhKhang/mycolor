@@ -77,7 +77,7 @@ class _PlayOneShotAnimationState extends State<PlayOneShotAnimation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('One-Shot Example'),
+        title: Text('One-Shot Example'),
       ),
       body: Center(
         child: RiveAnimation.network(

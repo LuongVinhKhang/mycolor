@@ -1,30 +1,34 @@
 import 'package:mycolor/app/utils/full_screen.dart';
 
 class Constants {
-  static const NONE_FULL_SCREEN_MODE = 'NONE';
+  static const noneFullScreenMode = 'NONE';
 
-  static const FULL_SCREEN_MODE_ANDROID = {
+  static const fullScreenModeAndroid = {
     'LEANBACK': FullScreenMode.LEANBACK,
     'EMERSIVE': FullScreenMode.EMERSIVE,
     'EMERSIVE_STICKY': FullScreenMode.EMERSIVE_STICKY,
-    'NONE': 'NONE'
+    'NONE': FullScreenMode.NONE
   };
 
-  static const FULL_SCREEN_MODE_IOS = {
+  static const fullScreenModeIos = {
     'FULL_SCREEN': FullScreenMode.LEANBACK,
-    'NONE': 'NONE'
+    'NONE': FullScreenMode.NONE
   };
 
-  static const WAVE_DIRECTION_DEFAULT = 'UP';
-  static const WAVE_DIRECTION_UP = 'UP';
-  static const WAVE_DIRECTION_DOWN = 'DOWN';
-  static const IS_SHOW_PERCENTAGE_DEFAULT = true;
-  static const IS_SHOW_TIMER_DEFAULT = false;
+  static const languageDefault = 'en';
+  static const isDarkModeDefault = false;
+  static const waveDirectionDefault = 'UP';
+  static const waveDirectionUp = 'UP';
+  static const waveDirectionDown = 'DOWN';
 
-  static const THE_MOVIE_DB_API_KEY = 'TU_API_KEY';
-  static const THE_MOVIE_DB_IMG_PATH = 'https://image.tmdb.org/t/p/original';
-  static const DEFAULT_SHORTCUT_TIMER_MINUTES = [15, 30, 45, 60];
-  static const TIMER_MINUTES = [
+  static const isShowBackButtonDefault = true;
+  static const isShowPercentageDefault = true;
+  static const isShowTimerDefault = false;
+
+  static const theMovieDbApiKey = 'TU_API_KEY';
+  static const theMovieDbImgPath = 'https://image.tmdb.org/t/p/original';
+  static const defaultShortcutTimerMinutes = [15, 30, 45, 60];
+  static const timerMinutes = [
     5,
     10,
     15,

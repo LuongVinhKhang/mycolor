@@ -5,40 +5,40 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:mycolor/app/data/constants.dart';
 import 'package:mycolor/app/global_widgets/cat_view.dart';
 import 'package:mycolor/app/global_widgets/clickable_list_wheel_widget.dart';
-import 'package:mycolor/app/global_widgets/play_pause_view.dart';
+import 'package:mycolor/app/global_widgets/teddy_view.dart';
 import 'package:mycolor/app/routes/app_pages.dart';
+import 'package:mycolor/generated/locales.g.dart';
 
 import '../controllers/timer_setup_controller.dart';
 
 class TimerSetupView extends GetView<TimerSetupController> {
-  static const SCROLL_ITEM_HEIGHT = 80.0;
-  final _scrollController = new FixedExtentScrollController();
+  static const scrollItemHeight = 80.0;
+  final _scrollController = FixedExtentScrollController();
 
-  _buildShortcutOption() {
+  Widget _buildShortcutOption() {
     return Obx(() => Wrap(
           children: controller.timerList
               .toList()
               .map((e) => Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: controller.selectedTimerShortcut.value == e
                       ? ElevatedButton(
                           onPressed: () {},
-                          style: ButtonStyle(),
+                          style: const ButtonStyle(),
                           child: Text(
-                            e.toString() + " min",
-                            style: TextStyle(fontSize: 20),
+                            '$e ${LocaleKeys.min.tr}',
+                            style: const TextStyle(fontSize: 20),
                           ))
                       : OutlinedButton(
                           onPressed: () {
                             controller.selectTimerShortcut(e);
-                            int index = -1;
-                            for (int i = 0;
-                                i < Constants.TIMER_MINUTES.length;
+                            var index = -1;
+                            for (var i = 0;
+                                i < controller.timerOnTheScrollWheel.length;
                                 i++) {
-                              if (Constants.TIMER_MINUTES[i] == e) {
+                              if (controller.timerOnTheScrollWheel[i] == e) {
                                 index = i;
                                 break;
                               }
@@ -46,61 +46,64 @@ class TimerSetupView extends GetView<TimerSetupController> {
                             if (index == -1) {
                               index = 0;
                             }
-                            controller
-                                .selectTimer(Constants.TIMER_MINUTES[index]);
+                            controller.selectTimer(
+                                controller.timerOnTheScrollWheel[index]);
                             controller.setListWheelScrolling(true);
                             _scrollController
-                                .animateTo(
-                                    SCROLL_ITEM_HEIGHT * index.toDouble(),
-                                    duration: new Duration(seconds: 4),
+                                .animateTo(scrollItemHeight * index.toDouble(),
+                                    duration:
+                                        const Duration(milliseconds: 1500),
                                     curve: Curves.ease)
                                 .then((value) =>
                                     {controller.setListWheelScrolling(false)});
                           },
-                          style: ButtonStyle(),
                           child: Text(
-                            e.toString() + " min",
-                            style: TextStyle(fontSize: 20),
+                            '$e ${LocaleKeys.min.tr}',
+                            style: const TextStyle(fontSize: 20),
                           ))))
               .toList(),
         ));
   }
 
-  _buildScrollWheel() {
-    return ClickableListWheelScrollView(
-      scrollController: _scrollController,
-      itemHeight: SCROLL_ITEM_HEIGHT,
-      itemCount: Constants.TIMER_MINUTES.length,
-      child: ListWheelScrollView(
-        controller: _scrollController,
-        itemExtent: 80,
-        overAndUnderCenterOpacity: 0.3,
-        perspective: 0.0000000001,
-        physics: FixedExtentScrollPhysics(),
-        onSelectedItemChanged: (index) => {
-          if (!controller.listWheelScrolling.value)
-            {controller.selectTimer(Constants.TIMER_MINUTES[index])}
-        },
-        children: Constants.TIMER_MINUTES
-            .map((e) => Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                      // color: Colors.amber,
-                      borderRadius: BorderRadius.circular(5.0)),
-                  child: Center(
-                    child: Text(
-                      e.toString(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 50),
+  Widget _buildScrollWheel() {
+    return Obx(
+      () => ClickableListWheelScrollView(
+        scrollController: _scrollController,
+        itemHeight: scrollItemHeight,
+        itemCount: controller.timerOnTheScrollWheel.length,
+        child: ListWheelScrollView(
+          controller: _scrollController,
+          itemExtent: 80,
+          overAndUnderCenterOpacity: 0.3,
+          perspective: 0.0000000001,
+          physics: const FixedExtentScrollPhysics(),
+          onSelectedItemChanged: (index) {
+            controller.playAudio();
+            if (!controller.listWheelScrolling.value) {
+              controller.selectTimer(controller.timerOnTheScrollWheel[index]);
+            }
+          },
+          children: controller.timerOnTheScrollWheel
+              .toList()
+              .map<Widget>((e) => Container(
+                    height: 100,
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                    child: Center(
+                      child: Text(
+                        e.toString(),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 50),
+                      ),
                     ),
-                  ),
-                ))
-            .toList(),
+                  ))
+              .toList(),
+        ),
       ),
     );
   }
 
-  _buildScroll() {
+  Widget _buildScroll() {
     return Container(
       height: 300,
       child: Stack(children: [
@@ -109,7 +112,8 @@ class TimerSetupView extends GetView<TimerSetupController> {
         //     width: double.infinity,
         //     height: 300,
         //     decoration: new BoxDecoration(
-        //         shape: BoxShape.circle, border: Border.all(color: Colors.cyan)),
+        //         shape: BoxShape.circle,
+        //         border: Border.all(width: 10, color: Colors.cyan)),
         //   ),
         // ),
         _buildScrollWheel(),
@@ -120,18 +124,18 @@ class TimerSetupView extends GetView<TimerSetupController> {
             decoration: BoxDecoration(
                 border: Border(
               top: BorderSide(
-                color: Colors.black38,
-                width: 1.0,
+                color: Theme.of(Get.context!).iconTheme.color!,
+                width: 2,
               ),
               bottom: BorderSide(
-                color: Colors.black38,
-                width: 1.0,
+                color: Theme.of(Get.context!).iconTheme.color!,
+                width: 2,
               ),
             )),
             child: Padding(
                 padding: EdgeInsets.all(15),
                 child: Text(
-                  'min',
+                  LocaleKeys.min.tr,
                   textAlign: TextAlign.end,
                   style: TextStyle(fontSize: 40, fontWeight: FontWeight.w100),
                 )),
@@ -141,46 +145,74 @@ class TimerSetupView extends GetView<TimerSetupController> {
     );
   }
 
-  _buildButton() {
+  Widget _buildButton() {
     return TextButton(
         onPressed: () {
-          print(controller.selectedTimer.value);
+          debugPrint(controller.selectedTimer.value.toString());
           Get.toNamed(Routes.WAVE_PROGRESS,
               arguments: {'selectedTimer': controller.selectedTimer.value});
         },
         child: Text(
-          'Let\'s go',
-          style: TextStyle(fontSize: 30),
+          LocaleKeys.timer_setup_lets_go.tr,
+          style: const TextStyle(fontSize: 30),
         ));
   }
 
-  _buildTree() {
-    return CatView(catState: 'Walk');
+  Widget _buildTree() {
+    // return CatView(catState: 'Walk');
+    return TeddyView(teddyState: "Idle");
   }
 
   @override
   Widget build(BuildContext context) {
     return ThemeSwitchingArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text('TimerSetupView'),
+          title: Text(LocaleKeys.timer_setup_title.tr),
           centerTitle: true,
+          leading: ThemeSwitcher(
+              key: Key("ThemeSwitcher"),
+              builder: (context) => Obx(() => IconButton(
+                    icon: controller.isDarkMode.value
+                        ? const Icon(
+                            CupertinoIcons.brightness,
+                          )
+                        : const Icon(
+                            CupertinoIcons.moon_stars,
+                          ),
+                    onPressed: () {
+                      controller.changeTheme(context);
+                    },
+                  ))),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  final data = await Get.toNamed(Routes.SETTING);
+                  if (data == 'update_view') {
+                    controller.onInit();
+                  }
+                },
+                icon: const Icon(Icons.settings))
+          ],
         ),
-        body: SingleChildScrollView(
-          child: Column(children: [
-            _buildScroll(),
-            _buildShortcutOption(),
-            _buildButton(),
-            // Spacer(),
-            // Placeholder(fallbackHeight: 200,),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                height: 300,
-                child: _buildTree(),
-              ),
-            ),
-          ]),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            print(constraints.maxHeight);
+            return Column(children: [
+              _buildScroll(),
+              _buildShortcutOption(),
+              _buildButton(),
+              if (constraints.maxHeight > 712)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    height: 300,
+                    child: _buildTree(),
+                  ),
+                ),
+            ]);
+          },
         ),
       ),
     );

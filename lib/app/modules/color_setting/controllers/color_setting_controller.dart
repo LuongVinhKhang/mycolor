@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mycolor/app/data/colors.dart';
 import 'package:mycolor/app/data/enums.dart';
@@ -54,7 +55,7 @@ class ColorSettingController extends GetxController {
 
   void reorderColorByIndex(
       ColorSettingSection section, int oldIndex, int newIndex) {
-    print(
+    debugPrint(
         'oldIndex ' + oldIndex.toString() + ' newIndex ' + newIndex.toString());
     if (newIndex > oldIndex) {
       newIndex -= 1;
@@ -99,23 +100,22 @@ class ColorSettingController extends GetxController {
 
   void resetColorList(ColorSettingSection section) {
     if (section == ColorSettingSection.background) {
-      backgroudColors.value = ColorConstants.DEFAULT_BACKGROUND_COLOR;
+      backgroudColors.value = ColorConstants.defaultBackgroundColor;
     } else if (section == ColorSettingSection.wave) {
-      waveColors.value = ColorConstants.DEFAULT_WAVE_COLOR;
+      waveColors.value = ColorConstants.defaultWaveColor;
     }
   }
 
   // ----------------- storage
   void loadColorFromStorage() {
-    print('loadColorFromStorage');
-    backgroudColors.value = LocalStorage().getBackgroundColors() ??
-        ColorConstants.DEFAULT_BACKGROUND_COLOR;
-    waveColors.value =
-        LocalStorage().getWaveColors() ?? ColorConstants.DEFAULT_WAVE_COLOR;
+    debugPrint('loadColorFromStorage');
+    backgroudColors.value = LocalStorage().getBackgroundColors();
+    waveColors.value = LocalStorage().getWaveColors();
+    debugPrint(' ' + backgroudColors.toString() + '\n' + waveColors.toString());
   }
 
   void saveColorToStorage() {
-    print('saveColorToStorage');
+    debugPrint('saveColorToStorage');
     LocalStorage().setBackgroundColors(backgroudColors);
     LocalStorage().setWaveColors(waveColors);
   }

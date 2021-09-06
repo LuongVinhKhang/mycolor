@@ -1,8 +1,6 @@
 import 'package:get/get.dart';
 
 class ThemeSettingController extends GetxController {
-  //TODO: Implement ThemeSettingController
-
   final count = 0.obs;
   @override
   void onInit() {

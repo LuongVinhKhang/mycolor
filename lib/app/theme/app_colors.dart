@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mycolor/app/data_provider/local_storage.dart';
 
 class AppColors {
-  var bottomFooterGradient = LocalStorage().isDarkMode()
+  var bottomFooterGradient = LocalStorage().getIsDarkMode()
       ? [
           Colors.lightBlue,
           Colors.lightBlue.shade100,
@@ -15,7 +15,7 @@ class AppColors {
         ];
 
   var kPrimaryTextColor =
-      LocalStorage().isDarkMode() ? Color(0xDDFFFFFF) : Color(0xDD000000);
+      LocalStorage().getIsDarkMode() ? Color(0xDDFFFFFF) : Color(0xDD000000);
   var kSecondaryTextColor =
-      LocalStorage().isDarkMode() ? Color(0x89FFFFFF) : Color(0x89000000);
+      LocalStorage().getIsDarkMode() ? Color(0x89FFFFFF) : Color(0x89000000);
 }

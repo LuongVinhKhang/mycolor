@@ -1,5 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppThemes {
   static final Color _lightFocusColor = Colors.black.withOpacity(0.12);
@@ -64,6 +64,7 @@ class AppThemes {
 
   static ThemeData get lightThemeData {
     return ThemeData(
+        // colorScheme: ColorScheme.light(),
         primarySwatch: Colors.red,
         brightness: Brightness.light,
         fontFamily: 'Koho',
@@ -79,6 +80,11 @@ class AppThemes {
 
   static ThemeData get darkThemeData {
     return ThemeData(
+        // colorScheme: ColorScheme.dark(),
+        // The input text color same with backgound when use CupertinoTextInputDialog
+        cupertinoOverrideTheme: const CupertinoThemeData(
+          textTheme: CupertinoTextThemeData(),
+        ),
         primarySwatch: Colors.amber,
         brightness: Brightness.dark,
         fontFamily: 'Koho',

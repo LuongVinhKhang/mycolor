@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mycolor/app/data/constants.dart';
 import 'package:mycolor/app/data/enums.dart';
+import 'package:mycolor/app/data_provider/local_storage.dart';
 import 'package:mycolor/app/utils/full_screen.dart';
 
 class ScreenSettingController extends GetxController {
@@ -16,36 +18,39 @@ class ScreenSettingController extends GetxController {
     super.onInit();
     fullScreenModeSelected.value =
         GetStorage().read(StorageKeys.fullScreenMode) ??
-            Constants.NONE_FULL_SCREEN_MODE;
+            Constants.noneFullScreenMode;
 
-    if (Platform.isIOS) {
-      fullScreenModeList.value = Constants.FULL_SCREEN_MODE_IOS;
-    } else if (Platform.isAndroid) {
-      fullScreenModeList.value = Constants.FULL_SCREEN_MODE_ANDROID;
+    if (kIsWeb) {
     } else {
-      showScreenSetting.value = false;
+      if (Platform.isIOS) {
+        fullScreenModeList.value = Constants.fullScreenModeIos;
+      } else if (Platform.isAndroid) {
+        fullScreenModeList.value = Constants.fullScreenModeAndroid;
+      } else {
+        showScreenSetting.value = false;
+      }
     }
   }
 
+  @override
+  void onClose() {}
+
+  @override
+  void onReady() {
+    // TODO: implement onReady
+    super.onReady();
+  }
+
   void setFullScreenMode(String? value) {
-    if (value == null) {
-      value = Constants.NONE_FULL_SCREEN_MODE;
-    }
-    if (value == Constants.NONE_FULL_SCREEN_MODE) {
+    value ??= Constants.noneFullScreenMode;
+
+    if (value == Constants.noneFullScreenMode) {
       FullScreen.exitFullScreen();
     } else {
       FullScreen.enterFullScreen(fullScreenModeList[value]);
     }
 
-    GetStorage().write(StorageKeys.fullScreenMode, value);
     fullScreenModeSelected.value = value;
+    LocalStorage().setFullScreenMode(value);
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {}
 }

@@ -1,12 +1,12 @@
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:mycolor/app/data/custom_theme.dart';
 import 'package:mycolor/app/data/locales.dart';
-import 'package:mycolor/app/data/enums.dart';
 import 'package:mycolor/app/data_provider/local_storage.dart';
 
 import 'app/routes/app_pages.dart';
@@ -14,8 +14,6 @@ import 'app/theme/app_themes.dart';
 import 'generated/locales.g.dart';
 
 // https://www.youtube.com/watch?v=hSL6rXnNdBQ
-
-// https://rive.app/preview/?filename=665-1330-tree
 
 // refer for some styling, input validation,
 // https://github.com/RipplesCode/PersistentAnimatedDynamicThemeFlutterGetX/blob/master/lib/app/modules/home/views/home_view.dart
@@ -30,33 +28,40 @@ import 'generated/locales.g.dart';
 // this is cool
 // https://viblo.asia/p/tao-widget-hinh-ve-xem-phim-voi-customclipper-trong-flutter-gGJ59NmpKX2
 
-// https://flare.rive.app/
+// theme color
 
+// https://flare.rive.app/a/JuanCarlos/files/flare/teddyss
 
-// build percent
+// github action
+// https://www.youtube.com/watch?v=rpQKpXjH5vs&ab_channel=RobertBrunhage
 
+// unit test
+// https://www.youtube.com/watch?v=1U-QRKIY5so&ab_channel=TadasPetra
 
-final box = GetStorage();
-var locale;
+// widget test
+// https://www.youtube.com/watch?v=7N1qRivtCWI&ab_channel=TadasPetra
 
-main() async {
+// unit test with mock
+// https://www.youtube.com/watch?v=5BFlo9k3KNU&ab_channel=FilledStacks
+
+var isDarkMode;
+var appLocale;
+
+void main() async {
   await initServices();
 
-  bool isDarkMode = LocalStorage().isDarkMode() ?? false;
-  LocalStorage().setDarkMode(isDarkMode);
-
-  print('init with darkmode ' + Get.isDarkMode.toString());
-  runApp(ThemeProvider(
+  var a = ThemeProvider(
     initTheme: isDarkMode ? AppThemes.darkThemeData : AppThemes.lightThemeData,
     child: Builder(
       builder: (context) => GetMaterialApp(
-        title: "Persistent Theme",
+        locale: DevicePreview.locale(context), // Add the locale here
+        builder: DevicePreview.appBuilder, // Add the builder here
+        title: 'Focus',
         initialRoute: AppPages.INITIAL,
         getPages: AppPages.routes,
         theme: ThemeProvider.of(context),
-        // themeMode: ThemeMode.system,
-        darkTheme: AppThemes.darkThemeData,
         debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.system,
         defaultTransition: Transition.cupertino,
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate, // uses `flutter_localizations`
@@ -64,12 +69,19 @@ main() async {
           GlobalCupertinoLocalizations.delegate,
         ],
         translationsKeys: AppTranslation.translations,
-        locale: locale,
+        // locale: appLocale,
         fallbackLocale: FALLBACK_LOCALE,
         supportedLocales: SUPPORTED_LOCALES_MAP.values,
       ),
     ),
-  ));
+  );
+
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => a, // Wrap your app
+    ),
+  );
 }
 
 /**
@@ -85,47 +97,60 @@ en - null - US
 
  */
 
+getTheLangFromLocalStorage(String localeString) {
+  Locale locale = LocalStorage().stringToLocale(localeString);
+
+  debugPrint('init with language from local storage: ${localeString}');
+
+  return locale;
+}
+
+getTheLangFromSystem(Locale? systemLocale) {
+  Locale locale;
+
+  if (systemLocale == null) {
+    locale = FALLBACK_LOCALE;
+    LocalStorage().setLanguage(FALLBACK_LOCALE.languageCode);
+
+    debugPrint('init with sysmtem languauge with fallback locale: [' +
+        FALLBACK_LOCALE.languageCode +
+        ']');
+
+    return locale;
+  }
+
+  String localeString = LocalStorage().localeToString(systemLocale);
+
+  LocalStorage().setLanguage(localeString);
+
+  locale = Locale(systemLocale.languageCode, systemLocale.countryCode);
+
+  debugPrint('init with sysmtem languauge: ' + localeString);
+
+  return locale;
+}
+
 initServices() async {
-  print('starting services ...');
+  debugPrint('Starting services ...');
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
 
-  // get system_locale from GetX
-  system_locale = Get.deviceLocale ?? FALLBACK_LOCALE;
+  // get dark mode
+  isDarkMode = LocalStorage().getIsDarkModeRawValue() ?? Get.isPlatformDarkMode;
+  LocalStorage().setDarkMode(value: isDarkMode);
+  debugPrint('init with darkmode: ${Get.isPlatformDarkMode}');
 
-  // remove system_locale.countryCode
+  // get language
+  var langFromStorage = LocalStorage().getLanguageRawValue();
 
-  print('system is ' + system_locale.toString());
-  print(system_locale.languageCode.toString() +
-      ' - ' +
-      system_locale.scriptCode.toString() +
-      ' - ' +
-      system_locale.countryCode.toString());
-  system_locale = Locale(system_locale.languageCode);
-
-  // get lang code from storage
-  var lang = box.read(StorageKeys.language);
-
-  //
-  if (lang == null) {
-    lang = system_locale.languageCode;
-    box.write(StorageKeys.language, lang);
-  }
-
-  print('system is ' + system_locale.toString() + ' storage is ' + lang);
-
-  if (lang == system_locale.languageCode) {
-    locale = system_locale;
+  // first time app open
+  if (langFromStorage == null) {
+    appLocale = getTheLangFromSystem(Get.deviceLocale);
   } else {
-    locale = Locale(lang);
+    appLocale = getTheLangFromLocalStorage(langFromStorage);
   }
 
-  box.listenKey('language', (value) {
-    print('new language is $value');
-  });
-  box.listenKey('theme', (value) {
-    print('new theme is $value');
-  });
+  print(appLocale.toString());
 
-  print('All services started...');
+  debugPrint('All services started...');
 }

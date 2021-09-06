@@ -50,7 +50,7 @@
 //   }
 
 //   _buildPlayPause() {
-//     print('_buildPlayPause');
+//     debugPrint('_buildPlayPause');
 //     return RiveAnimation.asset(
 //       'assets/rives/playpause.riv',
 //       fit: BoxFit.fitWidth,

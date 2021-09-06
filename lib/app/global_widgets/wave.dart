@@ -35,7 +35,7 @@ class _WaveState extends State<Wave> with SingleTickerProviderStateMixin {
       duration: Duration(seconds: seconds),
     );
 
-    print("animation index " + widget.index.toString());
+    // debugPrint("animation index " + widget.index.toString());
     _animationController.forward(from: widget.index.toDouble() + 1);
 
     _animationController.repeat();

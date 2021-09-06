@@ -1,43 +1,72 @@
-import 'package:confetti/confetti.dart';
-import 'package:flutter/material.dart';
 import 'dart:math';
 
-import 'package:get/get.dart';
-import 'package:mycolor/app/data/colors.dart';
-import 'package:mycolor/app/global_widgets/liquid_linear_progress_indicator.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:animated_theme_switcher/animated_theme_switcher.dart';
+import 'package:confetti/confetti.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mycolor/app/global_widgets/liquid_linear_progress_indicator.dart';
 
 import '../controllers/wave_progress_controller.dart';
 
 class WaveProgressView extends GetView<WaveProgressController> {
-  _buildPercentage() {
+  static const List<Shadow>? textShadow = <Shadow>[
+    Shadow(
+      blurRadius: 20,
+    ),
+  ];
+
+  static const percentageTextStyle =
+      TextStyle(fontSize: 30, shadows: textShadow);
+
+  static const timerTextStyle = TextStyle(fontSize: 30, shadows: textShadow);
+
+  Widget _buildBackButton() {
+    return const SafeArea(child: BackButton());
+  }
+
+  Widget _buildPercentage() {
+    return Obx(() => Text('${(controller.currentPercentage * 100).toInt()}%',
+        style: percentageTextStyle));
+  }
+
+  Widget _buildTimer() {
     return Obx(() => Text(
-          (controller.currentPercentage * 100).toInt().toString() + '%',
-          style: TextStyle(fontSize: 30),
+          '${(controller.currentMS / 1000).toInt()}/${(controller.totalMS / 1000).toInt()}',
+          style: timerTextStyle,
         ));
   }
 
-  _buildTimer() {
-    return Obx(() => Text(
-          (controller.currentMS / 1000).toInt().toString() +
-              '/' +
-              (controller.totalMS / 1000).toInt().toString(),
-          style: TextStyle(fontSize: 30),
-        ));
+  Widget _buildPercentageAndTimer() {
+    return Obx(() => !controller.timeUpped.value
+        ? Wrap(
+            direction: Axis.vertical,
+            children: [
+              if (controller.isShowPercentage)
+                _buildPercentage()
+              else
+                const SizedBox(),
+              const SizedBox(
+                height: 10,
+              ),
+              if (controller.isShowTimer) _buildTimer() else const SizedBox(),
+            ],
+          )
+        : Container());
   }
 
-  _buildWave() {
+  Widget _buildWave() {
     return Obx(() => LiquidLinearProgressIndicator(
           value: controller.currentPercentage.value,
-          colors: ColorConstants.DEFAULT_WAVE_COLOR,
-          backgroundColors: ColorConstants.DEFAULT_BACKGROUND_COLOR,
+          colors: controller.waveColors,
+          backgroundColors: controller.backgroudColors,
           direction: Axis.vertical,
         ));
   }
 
-  _buildTextYouDidIt() {
+  Widget _buildTextYouDidIt() {
     return SizedBox(
-      width: 250.0,
+      width: 250,
       height: 50,
       child: DefaultTextStyle(
         style: const TextStyle(
@@ -45,26 +74,26 @@ class WaveProgressView extends GetView<WaveProgressController> {
           color: Colors.white,
           shadows: [
             Shadow(
-              blurRadius: 7.0,
+              blurRadius: 7,
               color: Colors.white,
-              offset: Offset(0, 0),
+              offset: Offset(1, 0),
             ),
           ],
         ),
         child: AnimatedTextKit(
           repeatForever: true,
           animatedTexts: [
-            FlickerAnimatedText("You did it!"),
+            FlickerAnimatedText('You did it!'),
           ],
           onTap: () {
-            print("Tap Event");
+            debugPrint('Tap Event');
           },
         ),
       ),
     );
   }
 
-  _buildTextCongrats() {
+  Widget _buildTextCongrats() {
     const colorizeColors = [
       Colors.purple,
       Colors.blue,
@@ -73,12 +102,12 @@ class WaveProgressView extends GetView<WaveProgressController> {
     ];
 
     const colorizeTextStyle = TextStyle(
-      fontSize: 45.0,
+      fontSize: 45,
       fontFamily: 'Horizon',
     );
 
     return SizedBox(
-      width: 250.0,
+      width: 250,
       height: 80,
       child: AnimatedTextKit(
         stopPauseOnTap: true,
@@ -90,18 +119,18 @@ class WaveProgressView extends GetView<WaveProgressController> {
             colors: colorizeColors,
           )
         ],
-        isRepeatingAnimation: true,
         onTap: () {
-          print("Tap Event");
+          debugPrint('Tap Event');
           controller.confettiController.value.play();
         },
       ),
     );
   }
 
-  _buildTextes() {
+  Widget _buildTextes() {
     return Obx(() => controller.timeUpped.value
         ? Wrap(
+            direction: Axis.vertical,
             children: [_buildTextCongrats(), _buildTextYouDidIt()],
           )
         : Container());
@@ -122,7 +151,7 @@ class WaveProgressView extends GetView<WaveProgressController> {
     final fullAngle = degToRad(360);
     path.moveTo(size.width, halfWidth);
 
-    for (double step = 0; step < fullAngle; step += degreesPerStep) {
+    for (var step = 0.0; step < fullAngle; step += degreesPerStep) {
       path.lineTo(halfWidth + externalRadius * cos(step),
           halfWidth + externalRadius * sin(step));
       path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep),
@@ -132,7 +161,7 @@ class WaveProgressView extends GetView<WaveProgressController> {
     return path;
   }
 
-  _buildConfetti() {
+  Widget _buildConfetti() {
     return Obx(() => controller.timeUpped.value
         ? ConfettiWidget(
             confettiController: controller.confettiController.value,
@@ -152,39 +181,34 @@ class WaveProgressView extends GetView<WaveProgressController> {
         : Container());
   }
 
-  _buildPercentageAndTimer() {
-    return Wrap(
-      children: [
-        controller.isShowPercentage ? _buildPercentage() : Container(),
-        controller.isShowTimer ? _buildTimer() : Container(),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          _buildWave(),
-          Align(
-            alignment: Alignment.center,
-            child: _buildPercentageAndTimer(),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: _buildConfetti(),
-          ),
-          Align(alignment: Alignment.center, child: _buildTextes()),
-          GestureDetector(
-            onDoubleTap: () {
-              controller.onTimerPaused();
-            },
-            onTap: () {
-              controller.onTimerContinue();
-            },
-          )
-        ],
+    return ThemeSwitchingArea(
+      child: Scaffold(
+        body: Stack(
+          children: [
+            _buildWave(),
+            Align(
+              child: _buildPercentageAndTimer(),
+            ),
+            Align(
+              child: _buildConfetti(),
+            ),
+            Align(child: _buildTextes()),
+            GestureDetector(
+              onDoubleTap: () {
+                controller.onTimerPaused();
+              },
+              onTap: () {
+                controller.onTimerContinue();
+              },
+            ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: _buildBackButton(),
+            )
+          ],
+        ),
       ),
     );
   }

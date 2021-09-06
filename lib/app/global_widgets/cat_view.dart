@@ -60,7 +60,7 @@ class _CatViewState extends State<CatView> {
   }
 
   Widget _buildCat() {
-    print('_buildCat');
+    debugPrint('_buildCat');
     return RiveAnimation.asset(
       'assets/rives/cat.riv',
       fit: BoxFit.contain,
@@ -70,7 +70,7 @@ class _CatViewState extends State<CatView> {
   }
 
   Widget _buildTree() {
-    print('_buildCat');
+    debugPrint('_buildCat');
     return RiveAnimation.asset(
       'assets/rives/tree.riv',
       fit: BoxFit.fitWidth,
@@ -81,7 +81,7 @@ class _CatViewState extends State<CatView> {
 
   @override
   Widget build(BuildContext context) {
-    print('object ' + _currentState);
+    debugPrint('object ' + _currentState);
     GestureDetector(
       // key: UniqueKey(),
       onTap: () => _toggleState(),

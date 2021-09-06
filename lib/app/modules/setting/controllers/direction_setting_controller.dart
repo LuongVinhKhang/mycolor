@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:mycolor/app/data/constants.dart';
 import 'package:mycolor/app/data_provider/local_storage.dart';
 
 class DirectionSettingController extends GetxController {
@@ -8,18 +7,24 @@ class DirectionSettingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
-    directionSelected.value =
-        LocalStorage().getWaveDirection() ?? Constants.WAVE_DIRECTION_DEFAULT;
+    
+    directionSelected.value = LocalStorage().getWaveDirection();
+    print("DirectionSettingController onInit" + directionSelected.value);
   }
 
   @override
   void onReady() {
     super.onReady();
+
+    directionSelected.value = LocalStorage().getWaveDirection();
+    print("DirectionSettingController onReady " + directionSelected.value);
   }
 
   @override
-  void onClose() {}
+  void onClose() {
+    print("colseggggggg");
+    print("DirectionSettingController onClose");
+  }
 
   void setDirection(String? value) {
     if (value == null) {

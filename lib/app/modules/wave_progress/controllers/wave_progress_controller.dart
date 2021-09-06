@@ -1,6 +1,8 @@
-import 'dart:async';
+import 'dart:ui';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:confetti/confetti.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mycolor/app/data/constants.dart';
 import 'package:mycolor/app/data_provider/local_storage.dart';
@@ -15,48 +17,48 @@ class WaveProgressController extends GetxController {
   final timePaused = false.obs;
 
   static const perTickMS = 100;
-  late final waveDirection;
-  late final isShowPercentage;
-  late final isShowTimer;
+  late final String waveDirection;
+  late final bool isShowPercentage;
+  late final bool isShowTimer;
   late PausableTimer _timer;
   final confettiController =
       ConfettiController(duration: const Duration(seconds: 10)).obs;
+
+  late final List<Color> backgroudColors;
+  late final List<Color> waveColors;
 
   @override
   void onInit() {
     super.onInit();
 
-    waveDirection =
-        LocalStorage().getWaveDirection() ?? Constants.WAVE_DIRECTION_DEFAULT;
-    isShowPercentage = LocalStorage().getIsShowPercentage() ??
-        Constants.IS_SHOW_PERCENTAGE_DEFAULT;
-    isShowPercentage =
-        LocalStorage().getIsShowTimer() ?? Constants.IS_SHOW_TIMER_DEFAULT;
+    backgroudColors = LocalStorage().getBackgroundColors();
+    waveColors = LocalStorage().getWaveColors();
 
-    int minutes = 15;
-    var arg = Get.arguments;
-    if (arg != null) {
-      minutes = Get.arguments['selectedTimer'];
+    waveDirection = LocalStorage().getWaveDirection();
+    isShowPercentage = LocalStorage().getIsShowPercentage();
+    isShowTimer = LocalStorage().getIsShowTimer();
+
+    var minutes = 15;
+
+    if (Get.arguments != null) {
+      minutes = int.parse(Get.arguments!['selectedTimer'].toString());
     }
 
     minutes = 1;
 
     totalMS.value = minutes * 60 * 1000 ~/ 4;
 
-    if (waveDirection == Constants.WAVE_DIRECTION_UP) {
+    if (waveDirection == Constants.waveDirectionUp) {
       currentMS.value = 0;
-    } else if (waveDirection == Constants.WAVE_DIRECTION_DOWN) {
+    } else if (waveDirection == Constants.waveDirectionDown) {
       currentMS.value = totalMS.value;
     } else {
       throw UnimplementedError();
     }
 
     startTimer();
-  }
 
-  @override
-  void onReady() {
-    super.onReady();
+    playAudio();
   }
 
   @override
@@ -65,24 +67,30 @@ class WaveProgressController extends GetxController {
   }
 
   void setPercentage() {
-    print('setPercentage');
+    debugPrint('setPercentage');
+  }
+
+  Future<void> playAudio() async {
+    // or as a local variable
+    final player = AudioCache();
+    // call this method when desired
+    player.play('sounds/field.mp3');
   }
 
   void startTimer() {
-    const duration = const Duration(milliseconds: perTickMS);
-    // _timer = new Timer.periodic(duration, (timer) {
+    const duration = Duration(milliseconds: perTickMS);
     _timer = PausableTimer(
       duration,
       () {
-        if (waveDirection == Constants.WAVE_DIRECTION_UP) {
+        if (waveDirection == Constants.waveDirectionUp) {
           onTimerTickUp();
-        } else if (waveDirection == Constants.WAVE_DIRECTION_DOWN) {
+        } else if (waveDirection == Constants.waveDirectionDown) {
           onTimerTickDown();
         }
         _timer
           ..reset()
           ..start();
-        print('tick');
+        // debugPrint('tick');
       },
     )..start();
   }
@@ -106,7 +114,7 @@ class WaveProgressController extends GetxController {
   }
 
   void onTimerPaused() {
-    print('onTimerPaused');
+    debugPrint('onTimerPaused');
     if (timeUpped.value) {
       return;
     }
@@ -116,7 +124,7 @@ class WaveProgressController extends GetxController {
   }
 
   void onTimerContinue() {
-    print('onTimerContinue');
+    debugPrint('onTimerContinue');
     if (timeUpped.value) {
       return;
     }
@@ -134,7 +142,7 @@ class WaveProgressController extends GetxController {
   }
 
   void onTimeUp() {
-    print('onTimeUp');
+    debugPrint('onTimeUp');
     timeUpped.value = true;
     _timer.cancel();
 

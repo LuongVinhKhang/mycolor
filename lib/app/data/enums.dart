@@ -8,15 +8,16 @@ class StorageKeys {
   static const fullScreenMode = 'full_screen_mode';
   static const theme = 'theme';
 
-  static const backgroundColors = 'background_colors';
+  static const customTimer = 'custom_timer';
 
+  static const backgroundColors = 'background_colors';
   static const waveColors = 'wave_colors';
 
-  static const customTimer = 'custom_timer';
   static const isDarkMode = 'is_dark_mode';
 
   static const waveDirection = 'wave_direction';
 
+  static const isShowBackButton = 'is_show_back_button';
   static const isShowPercentage = 'is_show_percentage';
   static const isShowTimer = 'is_show_timer';
 }

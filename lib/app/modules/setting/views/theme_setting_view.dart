@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:mycolor/app/data/constants.dart';
-import 'package:mycolor/generated/locales.g.dart';
+import 'package:mycolor/app/modules/setting/controllers/theme_setting_controller.dart';
 
-class ThemeSettingView extends GetView {
+class ThemeSettingView extends GetView<ThemeSettingController> {
   @override
   Widget build(BuildContext context) {
-    return Placeholder(fallbackHeight: 200,);
+    return const Placeholder(
+      fallbackHeight: 200,
+    );
   }
 }

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-
 
 // From https://github.com/Athanax/fullscreen/blob/master/lib/fullscreen.dart
 class FullScreen {
@@ -22,7 +22,7 @@ class FullScreen {
           await _channel.invokeMethod('leanBack');
         }
       } catch (e) {
-        print(e);
+        debugPrint(e.toString());
       }
     }
   }
@@ -33,7 +33,7 @@ class FullScreen {
     try {
       status = await _channel.invokeMethod("status");
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return status;
   }
@@ -46,10 +46,11 @@ class FullScreen {
       try {
         await _channel.invokeMethod('exitFullScreen');
       } catch (e) {
-        print(e);
+        debugPrint(e.toString());
       }
     }
   }
 }
 
-enum FullScreenMode { EMERSIVE, EMERSIVE_STICKY, LEANBACK }
+// ignore: constant_identifier_names
+enum FullScreenMode { NONE, EMERSIVE, EMERSIVE_STICKY, LEANBACK }
